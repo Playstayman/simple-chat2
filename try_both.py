@@ -4,6 +4,7 @@ import socket
 import threading
 import queue
 import json
+import ssl
 
 
 class ChatApp:
@@ -35,8 +36,6 @@ class ChatApp:
         self.schedule_heartbeat(1)
         self.send_message(message=" ", is_down=True)
         self.master.destroy()
-
-        print("done")
 
     def schedule_heartbeat(self, interval_ms=5000):
         if True:
@@ -76,7 +75,6 @@ class ChatApp:
 def receive_messages(client_socket, chat_app):
     while not chat_app.stop_event.is_set():
         try:
-            print("got something")
             message = client_socket.recv(1024).decode('utf-8')
             data_package = json.loads(message)
             chat_app.message_queue.put((data_package["username"], data_package["message"]))
@@ -87,20 +85,18 @@ def receive_messages(client_socket, chat_app):
 def main():
     root = tk.Tk()
     chat_app = ChatApp(root)
-    chat_app.send_message_func = lambda message: client_socket.send(message.encode('utf-8'))
+    chat_app.send_message_func = lambda message: ssl_client.send(message.encode('utf-8'))
     root.geometry("400x800")
     chat_app.nickname = simpledialog.askstring("your username", "Enter your nick")
     server_ip = simpledialog.askstring("Server IP", "Enter the server IP address:")
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((server_ip, 5555))
+    ssl_client = ssl.wrap_socket(client_socket, cert_reqs=ssl.CERT_NONE, ssl_version=ssl.PROTOCOL_TLS)
+    ssl_client.connect((server_ip, 5555))
     chat_app.schedule_heartbeat()
     receive_threat = threading.Thread(target=receive_messages, args=(client_socket, chat_app))
     receive_threat.start()
     root.mainloop()
     receive_threat.join()
-
-
-# NIIIIICE
 
 
 if __name__ == "__main__":

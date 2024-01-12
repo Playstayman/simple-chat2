@@ -2,6 +2,30 @@ import socket
 import threading
 import time
 import json
+import requests
+import ssl
+
+
+def get_public_ip():
+    try:
+        response = requests.get('https://httpbin.org/ip')
+        ip_data = response.json()
+        return ip_data.get('origin')
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+
+def get_ipv4_address():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip_address = s.getsockname()[0]
+        s.close()
+        return ip_address
+    except socket.error as e:
+        print(f"Error: {e}")
+        return None
 
 
 def handle_client(client_socket, clients):
@@ -48,8 +72,10 @@ def handle_client(client_socket, clients):
 def accept_connections(server_socket, clients):
     while True:
         client_socket, addr = server_socket.accept()
-        clients.append(client_socket)
-        client_thread = threading.Thread(target=handle_client, args=(client_socket, clients))
+        ssl_client = ssl.wrap_socket(client_socket, server_side=True, certfile="certificate.crt", keyfile="server.key",
+                                     ssl_version=ssl.PROTOCOL_TLS)
+        clients.append(ssl_client)
+        client_thread = threading.Thread(target=handle_client, args=(ssl_client, clients))
         client_thread.start()
         for client in clients:
             try:
@@ -64,7 +90,8 @@ def accept_connections(server_socket, clients):
 def main():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     public_ip = socket.gethostbyname(socket.gethostname())
-    print(public_ip)
+    print("ip for local server: " + public_ip + "\n")
+    print(f"if you got your router set up you can use this {get_public_ip()}")
     server_socket.bind((public_ip, 5555))
     server_socket.listen(5)
 
