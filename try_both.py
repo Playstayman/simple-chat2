@@ -100,7 +100,7 @@ def main():
     receive_threat.join()
 
 
-# so it works
+# NIIIIICE
 
 
 if __name__ == "__main__":
