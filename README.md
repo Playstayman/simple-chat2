@@ -25,6 +25,11 @@ To install any missing libraries, you can run:
 ```bash
 pip install libray_name
 ```
+usually tkinter is installed automatically but if you don't have it you need admin rights:
+```bash
+sudo apt install python3-tk
+```
+on Linux
 
 ### Installation
 
@@ -38,37 +43,25 @@ pip install libray_name
     cd simple-chat2
     ```
 
-### Compiling the Files
+### Running the Application
 
 Before running the application, compile the two Python scripts:
 
-1. **Compile the server script**:
+1. **Start the server script**:
+	- Run the server script first. The server will display the IP address that clients can use to connect:
     ```bash
-    python -m compileall srvr.py
+    python3 server.py
     ```
-2. **Compile the client script**:
+2. **Start the client script**:
+	- After the server is running, use the client script to connect to the server's IP address. This will allow users to communicate through the chat app:
     ```bash
-    python -m compileall try_both.py
-    ```
-
-### Running the Application
-
-1. **Start the Server**:
-    - Run the server script first. The server will display the IP address that clients can use to connect:
-    ```bash
-    python srvr.py
-    ```
-
-2. **Connect with the Client**:
-    - After the server is running, use the client script to connect to the server's IP address. This will allow users to communicate through the chat app:
-    ```bash
-    python try_both.py
+    python -m compileall client.py
     ```
 
 ### How It Works
 
-- **Server (`srvr.py`)**: 
+- **Server (`server.py`)**: 
   - The server listens for incoming connections and facilitates communication between clients. When you run the server, it displays the IP address for clients to connect to.
   
-- **Client (`try_both.py`)**:
+- **Client (`client.py`)**:
   - The client connects to the server using the IP address provided by the server. Once connected, users can send and receive messages through a graphical user interface (GUI) created with `tkinter`.
