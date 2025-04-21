@@ -16,14 +16,13 @@ Ensure you have Python 3 installed on your system. The application requires the 
 - `time`
 - `json`
 - `requests`
-- `ssl`
 - `tkinter`
 - `queue`
 
 To install any missing libraries, you can run:
 
 ```bash
-pip install libray_name
+pip install library_name
 ```
 usually tkinter is installed automatically but if you don't have it you need admin rights:
 ```bash
