@@ -3,7 +3,6 @@ import threading
 import time
 import json
 import requests
-import ssl
 
 
 def get_public_ip():
@@ -72,10 +71,8 @@ def handle_client(client_socket, clients):
 def accept_connections(server_socket, clients):
     while True:
         client_socket, addr = server_socket.accept()
-        ssl_client = ssl.wrap_socket(client_socket, server_side=True, certfile="certificate.crt", keyfile="server.key",
-                                     ssl_version=ssl.PROTOCOL_TLS)
-        clients.append(ssl_client)
-        client_thread = threading.Thread(target=handle_client, args=(ssl_client, clients))
+        clients.append(client_socket)
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, clients))
         client_thread.start()
         for client in clients:
             try:

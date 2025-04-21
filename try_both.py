@@ -4,7 +4,6 @@ import socket
 import threading
 import queue
 import json
-import ssl
 
 
 class ChatApp:
@@ -85,13 +84,12 @@ def receive_messages(client_socket, chat_app):
 def main():
     root = tk.Tk()
     chat_app = ChatApp(root)
-    chat_app.send_message_func = lambda message: ssl_client.send(message.encode('utf-8'))
+    chat_app.send_message_func = lambda message: client_socket.send(message.encode('utf-8'))
     root.geometry("400x800")
     chat_app.nickname = simpledialog.askstring("your username", "Enter your nick")
     server_ip = simpledialog.askstring("Server IP", "Enter the server IP address:")
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ssl_client = ssl.wrap_socket(client_socket, cert_reqs=ssl.CERT_NONE, ssl_version=ssl.PROTOCOL_TLS)
-    ssl_client.connect((server_ip, 5555))
+    client_socket.connect((server_ip, 5555))
     chat_app.schedule_heartbeat()
     receive_threat = threading.Thread(target=receive_messages, args=(client_socket, chat_app))
     receive_threat.start()
